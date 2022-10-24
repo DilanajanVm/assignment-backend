@@ -106,7 +106,6 @@ app.post("/adminlogin", (req, res) => {
             if (err) {
                 res.send({ err: err });
               }else{
-                // res.send({ status:200,message:'User added success' });
                 if(result[0].UserName === name && result[0].password_details ===password_details && userType === 'ADMIN'){
                     res.send({ status:200,message:'User added success' });
                     console.log('success')
@@ -114,11 +113,41 @@ app.post("/adminlogin", (req, res) => {
                     res.send({ errorCode:105,message:'Invalid login creditials' });
                     console.log('false')
                 }
-            console.log(result[0].userType , 'ADMIN');
               }
         }
     );
   });
+
+
+
+  //userLogin
+app.post("/userlogin", (req, res) => {
+  const email = req.body.email;
+  const password_details = req.body.password;
+  const userType = req.body.userType;
+
+  console.log('login user called',email,password_details);
+  connection.query(
+      "SELECT * FROM registeruser WHERE  email=? and password_details=?",
+      [email,password_details],
+      (err, result) => {
+          if (result.length >0) {
+            console.log(result)
+            if(result[0].email === email && result[0].password_details ===password_details && userType === 'USER'){
+                res.send({ status:200,message:'User added success' });
+                
+            }else if(result[0].email !== email || result[0].password_details !==password_details){
+                res.send({ errorCode:105,message:'Invalid login creditials' });
+                console.log('false')
+            }
+          
+            }else{
+              console.log(result)
+              res.send({message:'There is no registered user.',code:'0' });
+            }
+      }
+  );
+});
 
 
 
